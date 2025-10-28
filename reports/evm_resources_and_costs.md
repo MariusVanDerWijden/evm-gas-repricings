@@ -174,7 +174,7 @@ For compute and state access operations (i.e. execution time), this anchor will 
 
 Given that the current gas model uses integer gas units, there is a trade-off in the choice of an anchor - with higher Mgas/s, we get more expressive prices as the rounding errors are lower. However, this comes at the cost of all operations becoming more expensive, which means that we will have to further increase the gas limit to process the same amount of transactions. This also means we need to further raise the cost of other resources, such as state and data, to make the relative costs between resources more balanced. In other words, we need to rebase the concept of gas.
 
-The following plot shows the average rounding errors of compute operations for different anchors, assuming the estimated execution times from [EIP-7904](https://eips.ethereum.org/EIPS/eip-7904) empirical analysis. 
+The following plot shows the average rounding errors of compute operations for different anchors, assuming the estimated execution times from [EIP-7904](https://eips.ethereum.org/EIPS/eip-7904) empirical analysis.
 
 ![](https://notes.ethereum.org/_uploads/Hy0JfNq6ge.png)
 
@@ -204,7 +204,6 @@ From Pari:
 >- Client makes changes in codebase and push to a repricing branch
 >- Results show up on custom dashboard on grafana
 
-
 ## Concerns about changing gas costs
 
 - What can break?
@@ -219,43 +218,53 @@ Also check [this discussion](https://ethereum-magicians.org/t/eip-2045-particle-
 
 ## Repricings in Glamsterdam
 
-There are currently 16 Repricing EIPs propodes for Glasmterdam. In this section, we discuss how they support L1 scalling, bundling options and how we think about prioritization.
+There are currently 16 Repricing EIPs proposed for Glamsterdam. In this section, we discuss how they support L1 scaling, bundling options and how we think about prioritization.
 
 ### Overview
 
 There are three types of EIPs within the repricing scope:
 
-1. **Broad harmonization**. These EIPs reprice a class of operations with the goal of harmonizing them and removing single bottlenecks.
+1. **Broad harmonisation**. These EIPs reprice a class of operations with the goal of harmonizing them and removing single bottlenecks.
 2. **Pricing extension**. These EIPs make targeted changes to a specific opcode or component of the gas model, usually coupled with a new mechanism.
 3. **Supporting**. These EIPs are not directly doing a repricing, but instead introduce a change that support other repricing EIPs or enhance the scalability potential of repricings.
 
 ### Bundle options
 
-#### Minimal repricing
+#### Minimal Repricing
 
-- Harmonize the costs of compute operations with [EIP-7904](./eip-7904.md).
-- Update the costs of state access operations with [EIP-8038](./eip-8038.md).
-- Increase the cost of state creation operations with [EIP-8037](./eip-8037.md).
-- Align the cost of ETH transfers with the rest of compute and state operations with [EIP-2780](./eip-2780.md).
-- Charge access lists for their data footprint with [EIP-7981](./eip-7981.md).
-- Increase call data cost for data-heavy transactions with [EIP-7976](./eip-7976.md).
+The Minimal Repricing includes a broad repricing of compute and state operations, thus fixing the majority of mispriced opcodes, aligning the cost of ETH transfers with the relevant compute and state operations, and updating data costs. Specifically, it:
 
-#### Extended repricing
+- Harmonises the costs of compute operations with [EIP-7904](./eip-7904.md), thus removing single bottlenecks and allowing a higher throughput of compute operations.
+- Updates the costs of state access operations with [EIP-8038](./eip-8038.md), thus removing state access as a scaling bottleneck.
+- Increases the cost of state creation operations with [EIP-8037](./eip-8037.md), thus allowing for higher transaction throughput without accelerating state growth.
+- Aligns the cost of ETH transfers with the rest of compute and state operations with [EIP-2780](./eip-2780.md), thus increasing the throughput of ETH transfers and aligning their cost with similar operations.
+- Charges access lists for their data footprint with [EIP-7981](./eip-7981.md), thus lowering the worst-case block size achieved through call data.
+- Increases call data cost for data-heavy transactions with [EIP-7976](./eip-7976.md), thus lowering the worst-case block size achieved through call data.
 
-Everything in the Minimal repricing plus
+This is the minimum viable bundle that allows us to remove single bottlenecks while leveraging the gains obtained from ePBS and BALs.
 
+On the one hand, we are doing a broad repricing of key burst resources (compute, state access, and data) that will take into account the relative performance of operations within individual resources and the changes in available execution time and data propagation delivered by ePBS and BALs.
 
-#### Full repricing
+On the other hand, we are increasing the cost of state growth to ensure its growth rate does not exceed unfeasible levels, given the increased transaction throughput. State growth is the most pressing of the persistent resources to address, as it affects hardware requirements and state access (and thus execution time). Additionally, there is no clear path yet to a long-term solution for state growth, which makes mitigating it even more critical.
 
-Everything in the Minimal repricing plus:
+#### Extended Repricing
 
-- Exclude refunds from block accounting with [EIP-7778](./eip-7778.md).
-- Decrease the costs of `TLOAD` and `TSTORE` with [EIP-7971](./eip-7971.md).
-- Scale the cost of `SSTORE` with the contract's storage size with [EIP-8032](./eip-8032.md).
+The Extended Repricing includes all changes from the Minimal Repricing plus some pricing extensions that mitigate worst-case blocks or enhanced throughput on the average case. The additions include:
+
+- Excluding refunds from block accounting with [EIP-7778](./eip-7778.md), thus mitigating the worst-case block from state access operations. This should be a simple change that tackles a concrete bottleneck.
+- Scaling the cost of `SSTORE` with the contract's storage size with [EIP-8032](./eip-8032.md), thus allowing smaller contracts to write to their storage more cheaply, while solving the state access bottleneck of large contracts. Compared with [EIP-8038](./eip-8038.md), this change improves the throughput of `SSTORE` operations on all contracts smaller than ~8 GB of data by making them cheaper. Even though this EIP includes a change to the trie, given the fact that state access is a key bottleneck, we expect the gains from this change to compensate the added complexity. However, more benchmarking is needed to gather final numbers.
+- Decreasing the costs of `TLOAD` and `TSTORE` with [EIP-7971](./eip-7971.md), thus improving the usability of transient storage. Pushing more users to leverage transient storage will ease the burden on state access.
+- Solving rounding errors from efficient compute operations with [EIP-8053](./eip-8053.md) or [EIP-8059](./eip-8059.md). On average, transactions are expected to incur 4% of rounding errors on compute operations.
+
+#### Further additions
+
+The following EIPs tackle some mispriced operations. However, they also introduce new mechanisms that need to be further considered.
+
 - Add multi-block state access discounts with [EIP-8057](./eip-8057.md).
 - Reduce the cost for deploying duplicated contracts with [EIP-8058](./eip-8058.md).
 - Change the memory expansion cost from quadratic to linear with [EIP-7923](./eip-7923.md).
 - Add code chunking and update code deployment cost with [EIP-2926](./eip-2926.md).
+- Add Multidimensional Gas Metering with [EIP-8011](./eip-8011.md).
 
 ### ToDo's
 
