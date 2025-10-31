@@ -211,3 +211,4 @@ __marimo__/
 *.parquet
 secrets.json
 .DS_Store
+.vscode/
