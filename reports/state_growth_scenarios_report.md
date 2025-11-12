@@ -225,9 +225,9 @@ For each scenario, we sweep $\varepsilon_s$ and $\varepsilon_b$ across a grid (0
 The following plots show the share of gas used in the equilibrium block by state creation operations for all price elasticity combinations $(​\varepsilon_s, \varepsilon_b)$.
 
 <p align="center">
-  <img src="figures/state_growth_scenarios_report/share_state_m1.png" alt="share_state_m1" style="width:350px;"/>
-  <img src="figures/state_growth_scenarios_report/share_state_m2.png" alt="share_state_m2" style="width:350px;"/>
-  <img src="figures/state_growth_scenarios_report/share_state_m3.png" alt="share_state_m3" style="width:350px;"/>
+  <img src="figures/state_growth_scenarios_report/share_state_m1.png" alt="share_state_m1" style="width:300px;"/>
+  <img src="figures/state_growth_scenarios_report/share_state_m2.png" alt="share_state_m2" style="width:300px;"/>
+  <img src="figures/state_growth_scenarios_report/share_state_m3.png" alt="share_state_m3" style="width:300px;"/>
 </p>
 
 With $m = 1$ (no repricing) and $n = 2$ (double gas limit), the share of block gas consumed by state creation increases relative to the current 30% when demand for state creation is more elastic than demand for burst resources. Thus, if state creation adapts more to changing prices than to burst resource usage, there is a risk that scaling up gas limits shifts more block capacity to state creation, as more state-creation demand will flood the block to take advantage of cheaper base fees.
@@ -245,9 +245,9 @@ In conclusion, increasing the gas costs of state creation may have a positive or
 The following plots show the annual state growth for all price elasticity combinations $(​\varepsilon_s, \varepsilon_b)$. Here we assume that the average block is the equilibrium block. This metric is key to understand how effective increasing the cost of state creation operations is at mitigating state growth.
 
 <p align="center">
-  <img src="figures/state_growth_scenarios_report/state_growth_m1.png" alt="state_growth_m1" style="width:350px;"/>
-  <img src="figures/state_growth_scenarios_report/state_growth_m2.png" alt="state_growth_m2" style="width:350px;"/>
-  <img src="figures/state_growth_scenarios_report/state_growth_m3.png" alt="state_growth_m3" style="width:350px;"/>
+  <img src="figures/state_growth_scenarios_report/state_growth_m1.png" alt="state_growth_m1" style="width:300px;"/>
+  <img src="figures/state_growth_scenarios_report/state_growth_m2.png" alt="state_growth_m2" style="width:300px;"/>
+  <img src="figures/state_growth_scenarios_report/state_growth_m3.png" alt="state_growth_m3" style="width:300px;"/>
 </p>
 
 Unsurprisingly, increasing the costs of state-creation operations decreases the state growth rate across all elasticity regimes compared with the scenario without repricing. This indicates that increasing the gas cost of state creation is effective at mitigating state growth across a wide range of price elasticities.
@@ -271,9 +271,9 @@ The following plots show the throughput gains on burst resources in the equilibr
 This metric is essential for measuring the impact on scalability of increasing state-creation costs. If we double the available gas, do we still observe at least double the throughput for burst resources? Recall that the baseline throughput is 0.7 seconds.
 
 <p align="center">
-  <img src="figures/state_growth_scenarios_report/burst_throughput_m1.png" alt="burst_throughput_m1" style="width:350px;"/>
-  <img src="figures/state_growth_scenarios_report/burst_throughput_m2.png" alt="burst_throughput_m2" style="width:350px;"/>
-  <img src="figures/state_growth_scenarios_report/burst_throughput_m3.png" alt="burst_throughput_m3" style="width:350px;"/>
+  <img src="figures/state_growth_scenarios_report/burst_throughput_m1.png" alt="burst_throughput_m1" style="width:300px;"/>
+  <img src="figures/state_growth_scenarios_report/burst_throughput_m2.png" alt="burst_throughput_m2" style="width:300px;"/>
+  <img src="figures/state_growth_scenarios_report/burst_throughput_m3.png" alt="burst_throughput_m3" style="width:300px;"/>
 </p>
 
 In all three scenarios, the dominant driver of burst-throughput gains is the burst-side price elasticity, $\varepsilon_b$. As $\varepsilon_b$ rises, we see an increasing gain over the 0.7-s baseline:
