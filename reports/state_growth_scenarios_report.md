@@ -25,7 +25,7 @@ Numeric summary (median / 90th percentile across explored elasticity grid):
 As of May 2025, the current uncompressed database size in a Geth node dedicated to state is ~340 GiB. After increasing the gas limit from 30M to 36M gas units, the median size of new states created each day doubled, from ~102 MiB to ~205 MiB.
 
 <div style="display:flex;justify-content:center;">
-    <div style="max-width:800px;text-align:center;">
+    <div style="max-width:400px;text-align:center;">
         <img src="figures/state_growth_scenarios_report/state_growth_since_2024.png" alt="State growth (combined)" style="width:100%;height:auto;" />
         <p style="font-size:0.9em;margin:6px 0;">Historical state growth per day.</p>
     </div>
