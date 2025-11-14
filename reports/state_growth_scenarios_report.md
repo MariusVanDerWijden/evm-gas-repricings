@@ -18,14 +18,12 @@ To achieve this, we:
 - Raising the gas cost for state creation reduces the expected state growth across the explored elasticity regimes, but it slightly reduces burst-resource throughput.
 - The throughput loss is more impacted by the burst-demand elasticity than state creation costs. When burst demand is price‑elastic, doubling capacity still yields near‑linear throughput gains and repricing has only a small effect.
 
-Numeric summary (median / 90th percentile across explored elasticity grid):
-
 ## 1. Why do we care about state growth?
 
 As of May 2025, the current uncompressed database size in a Geth node dedicated to state is ~340 GiB. After increasing the gas limit from 30M to 36M gas units, the median size of new states created each day doubled, from ~102 MiB to ~205 MiB.
 
 <p align="center">
-  <img src="figures/state_growth_scenarios_report/state_growth_since_2024.png" alt="state_growth_since_2024" style="width:700px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/state_growth_since_2024.png" alt="state_growth_since_2024" style="width:700px;"/>
 </p>
 
 The relationship we are seeing in this example is not linear as expected. This is likely due to other factors impacting user behavior. However, all else being equal, we expect a proportional increase in the number of new states created as gas limits increase.
@@ -70,7 +68,7 @@ With this, we get the following state growth rates per day at each gas limit cha
 The next plot shows total state size in GiB over the next 2 years for the three gas schedules.
 
 <p align="center">
-  <img src="figures/state_growth_scenarios_report/state_size_by_schedule.png" alt="state_size_by_schedule" style="width:700px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/state_size_by_schedule.png" alt="state_size_by_schedule" style="width:700px;"/>
 </p>
 
 Under proportional scaling (keeping the same gas composition), increasing the block limit linearly increases the daily state creation (because we scale the measured 205 MiB/day by the gas limit ratio). Because daily additions compound, the total state size diverges over months and years between gas schedules. By the middle of 2027, the conservative schedule reaches a total state size of 686 GiB, the base schedule 859 GiB, and the aggressive schedule 1.08 TiB. In all cases, this is above the critical 650 GiB threshold identified by the [boatnet initiative](https://cperezz.github.io/bloatnet-website/index.html).
@@ -225,9 +223,9 @@ For each scenario, we sweep $\varepsilon_s$ and $\varepsilon_b$ across a grid (0
 The following plots show the share of gas used in the equilibrium block by state creation operations for all price elasticity combinations $(​\varepsilon_s, \varepsilon_b)$.
 
 <p align="center">
-  <img src="figures/state_growth_scenarios_report/share_state_m1.png" alt="share_state_m1" style="width:300px;"/>
-  <img src="figures/state_growth_scenarios_report/share_state_m2.png" alt="share_state_m2" style="width:300px;"/>
-  <img src="figures/state_growth_scenarios_report/share_state_m3.png" alt="share_state_m3" style="width:300px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/share_state_m1.png" alt="share_state_m1" style="width:230px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/share_state_m2.png" alt="share_state_m2" style="width:230px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/share_state_m3.png" alt="share_state_m3" style="width:230px;"/>
 </p>
 
 With $m = 1$ (no repricing) and $n = 2$ (double gas limit), the share of block gas consumed by state creation increases relative to the current 30% when demand for state creation is more elastic than demand for burst resources. Thus, if state creation adapts more to changing prices than to burst resource usage, there is a risk that scaling up gas limits shifts more block capacity to state creation, as more state-creation demand will flood the block to take advantage of cheaper base fees.
@@ -245,9 +243,9 @@ In conclusion, increasing the gas costs of state creation may have a positive or
 The following plots show the annual state growth for all price elasticity combinations $(​\varepsilon_s, \varepsilon_b)$. Here we assume that the average block is the equilibrium block. This metric is key to understand how effective increasing the cost of state creation operations is at mitigating state growth.
 
 <p align="center">
-  <img src="figures/state_growth_scenarios_report/state_growth_m1.png" alt="state_growth_m1" style="width:300px;"/>
-  <img src="figures/state_growth_scenarios_report/state_growth_m2.png" alt="state_growth_m2" style="width:300px;"/>
-  <img src="figures/state_growth_scenarios_report/state_growth_m3.png" alt="state_growth_m3" style="width:300px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/state_growth_m1.png" alt="state_growth_m1" style="width:230px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/state_growth_m2.png" alt="state_growth_m2" style="width:230px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/state_growth_m3.png" alt="state_growth_m3" style="width:230px;"/>
 </p>
 
 Unsurprisingly, increasing the costs of state-creation operations decreases the state growth rate across all elasticity regimes compared with the scenario without repricing. This indicates that increasing the gas cost of state creation is effective at mitigating state growth across a wide range of price elasticities.
@@ -255,7 +253,7 @@ Unsurprisingly, increasing the costs of state-creation operations decreases the 
 Increasing the gas cost of state creation has another interesting effect. We can observe it by plotting the annual state growth against the state demand elasticity $\varepsilon_s$ for each scenario.
 
 <p align="center">
-  <img src="figures/state_growth_scenarios_report/state_growth_all.png" alt="state_growth_all" style="width:700px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/state_growth_all.png" alt="state_growth_all" style="width:700px;"/>
 </p>
 
 - No reprice: higher $\varepsilon_s \implies$ more state growth
@@ -271,9 +269,9 @@ The following plots show the throughput gains on burst resources in the equilibr
 This metric is essential for measuring the impact on scalability of increasing state-creation costs. If we double the available gas, do we still observe at least double the throughput for burst resources? Recall that the baseline throughput is 0.7 seconds.
 
 <p align="center">
-  <img src="figures/state_growth_scenarios_report/burst_throughput_m1.png" alt="burst_throughput_m1" style="width:300px;"/>
-  <img src="figures/state_growth_scenarios_report/burst_throughput_m2.png" alt="burst_throughput_m2" style="width:300px;"/>
-  <img src="figures/state_growth_scenarios_report/burst_throughput_m3.png" alt="burst_throughput_m3" style="width:300px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/burst_throughput_m1.png" alt="burst_throughput_m1" style="width:230px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/burst_throughput_m2.png" alt="burst_throughput_m2" style="width:230px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/burst_throughput_m3.png" alt="burst_throughput_m3" style="width:230px;"/>
 </p>
 
 In all three scenarios, the dominant driver of burst-throughput gains is the burst-side price elasticity, $\varepsilon_b$. As $\varepsilon_b$ rises, we see an increasing gain over the 0.7-s baseline:
@@ -286,7 +284,7 @@ By contrast, the horizontal variation with state elasticity $\varepsilon_s$ is m
 In the following plot, we can see more clearly the impact of raising state creation costs on throughput. In general, higher costs slightly decrease the throughput gains. However, the effect is small when compared with the impact of the demand elasticity of burst resources. If we are in a regime with high $\varepsilon_b$, then increasing state creation affects throughput by less than 25%.
 
 <p align="center">
-  <img src="figures/state_growth_scenarios_report/burst_throughput_all.png" alt="burst_throughput_all" style="width:700px;"/>
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/burst_throughput_all.png" alt="burst_throughput_all" style="width:700px;"/>
 </p>
 
 ## 4. Discussion and next steps
