@@ -13,7 +13,7 @@ To achieve this, we:
 
 ### TLDR
 
-- The state can grow substantially if throughput increases and state creation costs remain relatively cheap. By the middle of 2027, the conservative schedule reaches a total state size of 686 GiB, the base schedule 859 GiB, and the aggressive schedule 1.08 TiB. In all cases, this is above the critical 650 GiB threshold identified by the [boatnet initiative](https://cperezz.github.io/bloatnet-website/index.html).
+- The state can grow substantially if throughput increases while state creation costs remain relatively cheap. By the middle of 2027, the conservative schedule reaches a total state size of 686 GiB, the base schedule 859 GiB, and the aggressive schedule 1.08 TiB. In all cases, this is above the critical 650 GiB threshold identified by the [bloatnet initiative](https://cperezz.github.io/bloatnet-website/index.html).
 - We need to align on what the acceptable level of state growth is for Ethereum in the medium and long term.
 - Raising the gas cost for state creation reduces the expected state growth across the explored elasticity regimes, but it slightly reduces burst-resource throughput.
 - The throughput loss is more impacted by the burst-demand elasticity than state creation costs. When burst demand is price‑elastic, doubling capacity still yields near‑linear throughput gains and repricing has only a small effect.
@@ -28,10 +28,10 @@ As of May 2025, the current uncompressed database size in a Geth node dedicated 
 
 The relationship we are seeing in this example is not linear as expected. This is likely due to other factors impacting user behavior. However, all else being equal, we expect a proportional increase in the number of new states created as gas limits increase.
 
-High state growth rates have two downstream impacts:
+High state growth rates have two negative downstream impacts:
 
 1. If state grows faster than disk improvements and the decrease in storage per byte, we will eventually reach a point where validators get priced out and cannot keep up with the disk requirements needed to run an Ethereum validator node.
-2. The performance of state access operations such as `SSTORE` significantly depends on the size of the state, with larger states leading to worse execution times for these operations. The [boatnet initiative](https://cperezz.github.io/bloatnet-website/index.html) identified critical bottlenecks in state access patterns with a state size of 650 GiB, resulting in 40% increases in state access times, exponentially higher memory consumption, and longer sync times.
+2. The performance of state access operations such as `SSTORE` significantly depends on the size of the state, with larger states leading to worse execution times for these operations. The [bloatnet initiative](https://cperezz.github.io/bloatnet-website/index.html) identified critical bottlenecks in state access patterns with a state size of 650 GiB, resulting in 40% increases in state access times, exponentially higher memory consumption, and longer sync times.
 
 It is still unclear how hardware improvements and client optimizations will affect these bottlenecks; however, given the current focus on scalability and the expected increase in the gas limit, this is an issue we need to look into more carefully. Above all, we need to align on what the acceptable level of state growth for Ethereum is in the medium and long term.
 
@@ -71,7 +71,7 @@ The next plot shows total state size in GiB over the next 2 years for the three 
   <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/state_size_by_schedule.png" alt="state_size_by_schedule" style="width:700px;"/>
 </p>
 
-Under proportional scaling (keeping the same gas composition), increasing the block limit linearly increases the daily state creation (because we scale the measured 205 MiB/day by the gas limit ratio). Because daily additions compound, the total state size diverges over months and years between gas schedules. By the middle of 2027, the conservative schedule reaches a total state size of 686 GiB, the base schedule 859 GiB, and the aggressive schedule 1.08 TiB. In all cases, this is above the critical 650 GiB threshold identified by the [boatnet initiative](https://cperezz.github.io/bloatnet-website/index.html).
+Under proportional scaling (keeping the same gas composition), increasing the block limit linearly increases the daily state creation (because we scale the measured 205 MiB/day by the gas limit ratio). Because daily additions compound, the total state size diverges over months and years between gas schedules. By the middle of 2027, the conservative schedule reaches a total state size of 686 GiB, the base schedule 859 GiB, and the aggressive schedule 1.08 TiB. In all cases, this is above the critical 650 GiB threshold identified by the [bloatnet initiative](https://cperezz.github.io/bloatnet-website/index.html).
 
 ## 3. How does repricing impact state growth and throughput?
 
@@ -93,7 +93,7 @@ We start by defining a simple model that allows us to estimate the average daily
 #### Model assumptions
 
 - The base fee follows the EIP-1559 design, where block usage above 50% of $G$ leads to an increase in the base fee for the next block, wile a block usage below 50% of $G$ leads to a decrease in the base fee for the next block.
-- With current pricing, blocks occupy on average 50% of $G$, with 30% of that gas allocated to state creation and the remaining to burst resources.
+- With current design, blocks occupy on average 50% of $G$, with 30% of that gas allocated to state creation and the remaining to burst resources.
 - The average block is achieved at equilibrium, when 50% of $G$ is sufficient to cover the demand for state creation and burst resource usage at the price $p$.
 - Both demand curves are modelled with two independent isoelastic models:
 
@@ -236,7 +236,7 @@ Increasing $m$ (making state creation more expensive) impacts the block share de
 - Conversely, when both demands have high elasticity (top-right corner), the effect is reversed, with a decreasing portion of the block dedicated to state creation when compared with the $m=1$ scenario. The magnitude of the change depends again on $m$.
 - The cases with the highest share of state creation occur when demand for burst resources has low elasticity (bottom side of the plot). In this case, increasing the cost of state creation has no effect.
 
-In conclusion, increasing the gas costs of state creation may have a positive or negative effect on the share of the equilibrium block dedicated to state creation. This depends on the elasticity regime. Yet, for the regimes with the highest share of state (when burst resources have low demand elasticity), increasing the gas costs of state creation does not impact this share.
+In conclusion, increasing the gas costs of state creation may have a positive or negative effect on the share of the equilibrium block dedicated to state creation. This depends on the elasticity regime. Yet, when the share of block space dedicated to state creation is already high in the base scenario ($m=1$), then increasing the gas costs of state creation does not impact this share significantly. In other words, if we are in an elasticity regime that will already have a high share of state creation gas under increasing block limits, increases its gas prices won't have a significant effect.
 
 ### 3.3 Impact of repricing on the annual state growth
 
@@ -289,11 +289,15 @@ In the following plot, we can see more clearly the impact of raising state creat
 
 ## 4. Discussion and next steps
 
-The first takeaway is that, under our simplified model, increasing the cost of state-creation operations effectively mitigates state growth across all price elasticity regimes. However, this still comes at a cost of slightly lower throughput gains for burst resources. This effect is compounded by the elasticity of demand for burst resources — the more elastic they are, the higher the through gains achieved across all pricing scenarios.
+The first takeaway is that, under our simplified model, increasing the cost of state-creation operations effectively mitigates state growth across all price elasticity regimes. There is simply insufficient gas to grow the state by as much as in the base pricing scenario. However, this still comes at a cost of slightly lower throughput gains for burst resources. This effect is compounded by the elasticity of demand for burst resources — the more elastic they are, the higher the throughput gains achieved across all pricing scenarios.
+
+A natural question is where the real system sits in the $(\varepsilon_s,\varepsilon_b)$ grid. Our [preliminary empirical analysis](https://github.com/misilva73/evm-gas-repricings/blob/main/notebooks/0.4-state_price_elasticity.ipynb) suggests that short-run demand for state creation is moderately inelastic: a 1% increase in the base fee in USD is associated with only a ~0.6% decrease in new state created per unit of gas over the following days. Interpreted through the isoelastic lens, this points to $\varepsilon_s \approx 0.6$ for the aggregate state-creation workload in the short run. That is consistent with the intuition that many state-heavy actions (opening positions, creating contracts, minting tokens, committing data to rollups, etc.) are driven by longer-lived economic decisions and protocol-level policies that do not adjust instantaneously to price changes. We should add that spam contracts such as XEN are expected to induce a floor price, since whenever the overall cost of state creation falls below a certain threshold, bots will flood the network with state-heavy transactions, thereby increasing the base fee for future blocks.
+
+For burst resources, we do not yet have comparable estimates, but there are reasons to expect a higher elasticity, at least for a large share of the workload. Many burst-dominated activities (arbitrage, liquidation, MEV search, latency-sensitive trading) are explicitly fee-constrained and can back off quickly when gas in USD spikes. This points to a $\varepsilon_b$ that is plausibly at or above the range we see for state. At the same time, there is a non-trivial inelastic core of burst demand (rollup proofs, bridges, periodic maintenance transactions) that will occur even at elevated fees. Overall, a reasonable prior is that $\varepsilon_b \gtrsim \varepsilon_s$ for much of the marginal block space, with significant heterogeneity across use cases. In that regime, the scenario results in Section 3 are encouraging. They suggest that we can raise state prices enough to materially slow state growth while still retaining near-linear throughput gains for burst resources, provided the system remains in a part of the demand curve where burst usage is indeed more price-responsive than state creation.
 
 There are a couple of follow-ups we should do after this:
 
 1. Consider a pricing scenario where state creation costs are metered independently of burst resources. This would be akin to doing [multidimensional metering](https://eips.ethereum.org/EIPS/eip-8011) with only two resources. [EIP-8075](https://eips.ethereum.org/EIPS/eip-8075) also does something similar.
 2. Do more empirical measurements of the price elasticity of the various resources. We already have [an initial analysis](https://github.com/misilva73/evm-gas-repricings/blob/main/notebooks/0.4-state_price_elasticity.ipynb) for state creation, but burst resources are still missing.
-3. Align on what is the "safe" level of state growth in the medium term, so we can correctly set a target for it.
-4. Repricing is only one lever for solving state growth. Combining it with better state management (compaction, pruning strategies, caching, ephemeral storage layers, etc.) will further mitigate state growth-related bottlenecks.
+3. Align on what is the "safe" level of state growth in the medium term, so we can correctly set a target for it. This discussion is currently under way, but no consensus is reached yet.
+4. Repricing is only one lever for solving issues related to state growth. Combining it with better state management (compaction, pruning strategies, caching, ephemeral storage layers, etc.) will further mitigate state growth-related bottlenecks.
