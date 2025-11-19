@@ -17,6 +17,7 @@ To achieve this, we:
 - We need to align on what the acceptable level of state growth is for Ethereum in the medium and long term.
 - Raising the gas cost for state creation reduces the expected state growth across the explored elasticity regimes, but it slightly reduces burst-resource throughput.
 - The throughput loss is more impacted by the burst-demand elasticity than state creation costs. When burst demand is price‑elastic, doubling capacity still yields near‑linear throughput gains and repricing has only a small effect.
+- If state creation demand is inelastic, increasing state creation cost is expected to result in a higher base fee when compared with the scenario where state is not repriced. If this demand is elastic, this effect reverts.
 
 ## 1. Why do we care about state growth?
 
@@ -216,7 +217,11 @@ In the following sections, we consider the impact of three scenarios:
 
 In all cases, we assume that the gas limit doubles ($n=2$).
 
-For each scenario, we sweep $\varepsilon_s$ and $\varepsilon_b$ across a grid (0.1 to 1.5) and solve for $b^*$. With the equilibrium base fee $b^*$, we then compute $S^*$, $B^*$, the annual state growth in GiB, and the resource gas shares.
+For each scenario, we sweep $\varepsilon_s$ and $\varepsilon_b$ across a grid (0.1 to 1.5) and solve for $b^*$. With the equilibrium base fee $b^*$, we then compute $S^*$, $B^*$, the annual state growth in GiB, and the resource gas shares. To help visualize this, the following graph shows this new equilibrium for the base scenario assuming $\varepsilon_s=0.6$ and $\varepsilon_b=1$
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/base_fee_equilibrium.png" alt="base_fee_equilibrium" style="width:500px;"/>
+</p>
 
 ### 3.2 Impact of repricing on the share of gas used by state creation
 
@@ -250,7 +255,7 @@ The following plots show the annual state growth for all price elasticity combin
 
 Unsurprisingly, increasing the costs of state-creation operations decreases the state growth rate across all elasticity regimes compared with the scenario without repricing. This indicates that increasing the gas cost of state creation is effective at mitigating state growth across a wide range of price elasticities.
 
-Increasing the gas cost of state creation has another interesting effect. We can observe it by plotting the annual state growth against the state demand elasticity $\varepsilon_s$ for each scenario.
+Increasing the gas cost of state creation has another interesting effect. We can observe it by plotting the annual state growth against the state demand elasticity $\varepsilon_s$ for each scenario.  The variation on each boxplot is due to the burst demand elasticity $\varepsilon_b$.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/state_growth_all.png" alt="state_growth_all" style="width:700px;"/>
@@ -281,15 +286,38 @@ In all three scenarios, the dominant driver of burst-throughput gains is the bur
 
 By contrast, the horizontal variation with state elasticity $\varepsilon_s$ is more complex. Gains decrease slightly as $\varepsilon_s$ increases when $m = 1$. As for $m=2$ or $m=3$, the highest throughput gains on burst resources are achieved when both price elasticities are high.
 
-In the following plot, we can see more clearly the impact of raising state creation costs on throughput. In general, higher costs slightly decrease the throughput gains. However, the effect is small when compared with the impact of the demand elasticity of burst resources. If we are in a regime with high $\varepsilon_b$, then increasing state creation affects throughput by less than 25%.
+In the following plot, we can see more clearly the impact of raising state creation costs on throughput. The variation on each boxplot is due to the state demand elasticity $\varepsilon_s$.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/burst_throughput_all.png" alt="burst_throughput_all" style="width:700px;"/>
 </p>
 
+In general, higher costs slightly decrease the throughput gains. However, the effect is small when compared with the impact of the demand elasticity of burst resources. If we are in a regime with high $\varepsilon_b$, then increasing state creation affects throughput by less than 25%.
+
+### 3.5 Equilibrium fee
+
+The final metric we want to analyze is the equilibrium base fee. We expect this fee to be lower than the baseline $b^0=1$. However, how much lower does the fee get under different elasticity regimes and repricings? The following plot shows the equilibrium base fee for the three repricing scenarios and the burst demand elasticities. The variation on each boxplot is due to the state demand elasticity $\varepsilon_s$.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/base_fee_burst.png" alt="base_fee_burst" style="width:700px;"/>
+</p>
+
+Across all three pricing scenarios, the equilibrium base fee increases with the burst-side price elasticity: moving from very inelastic burst demand ($\varepsilon_b\approx0.1$) to highly elastic ($\varepsilon_b\approx1.5$) roughly triples the median base fee. When elasticity is high, more demand will be available to fill up the available gas, thus leading to a higher base fee.
+
+What about state demand elasticity? The following plot shows the equilibrium base fee for the three repricing scenarios and the state demand elasticities. The variation on each boxplot is due to the burst demand elasticity $\varepsilon_b$.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/misilva73/evm-gas-repricings/main/reports/figures/state_growth_scenarios_report/base_fee_state.png" alt="base_fee_state" style="width:700px;"/>
+</p>
+
+Interestingly, we don't see the same linear relationship between the base fee and state demand, with the median base fees maintaining similar ranges independently of the state demand elasticity. However, the elasticity regime has an impact on the ordering across scenarios:
+
+- When state demand is inelastic (left side of the plot), higher state prices lead to higher equilibrium fees. In this case, making the state more expensive does not affect demand as much, so more gas is used for the same state demand.
+- When state demand is elastic (right side of the plot), higher state prices lead to lower equilibrium fees. In this case, the demand for state creation responds more aggressively to increases in state costs, thus lowering the base fee.
+
 ## 4. Discussion and next steps
 
-The first takeaway is that, under our simplified model, increasing the cost of state-creation operations effectively mitigates state growth across all price elasticity regimes. There is simply insufficient gas to grow the state by as much as in the base pricing scenario. However, this still comes at a cost of slightly lower throughput gains for burst resources. This effect is compounded by the elasticity of demand for burst resources — the more elastic they are, the higher the throughput gains achieved across all pricing scenarios.
+The first takeaway is that, under our simplified model, increasing the cost of state-creation operations effectively mitigates state growth across all price elasticity regimes. There is simply insufficient gas to grow the state by as much as in the base pricing scenario. However, this still comes at a cost of slightly lower throughput gains for burst resources. This effect is compounded by the elasticity of demand for burst resources — the more elastic they are, the higher the throughput gains achieved across all pricing scenarios. If state creation demand is inelastic, increasing state creation costs is expected to result in a higher base fee than in the scenario where state is not repriced.
 
 A natural question is where the real system sits in the $(\varepsilon_s,\varepsilon_b)$ grid. Our [preliminary empirical analysis](https://github.com/misilva73/evm-gas-repricings/blob/main/notebooks/0.4-state_price_elasticity.ipynb) suggests that short-run demand for state creation is moderately inelastic: a 1% increase in the base fee in USD is associated with only a ~0.6% decrease in new state created per unit of gas over the following days. Interpreted through the isoelastic lens, this points to $\varepsilon_s \approx 0.6$ for the aggregate state-creation workload in the short run. That is consistent with the intuition that many state-heavy actions (opening positions, creating contracts, minting tokens, committing data to rollups, etc.) are driven by longer-lived economic decisions and protocol-level policies that do not adjust instantaneously to price changes. We should add that spam contracts such as XEN are expected to induce a floor price, since whenever the overall cost of state creation falls below a certain threshold, bots will flood the network with state-heavy transactions, thereby increasing the base fee for future blocks.
 
