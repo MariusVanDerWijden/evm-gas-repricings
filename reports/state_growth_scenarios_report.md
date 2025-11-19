@@ -133,7 +133,7 @@ $$
 
 At this new equilibrium, we get the following per-block usage:
 
-- $S^* = S(b^* \, m\, g_\text{state}^0)$, which leads to an average state growth of $2,628,000\cdot S^*$ bytes per year
+- $S^* = S(b^* \, m\, g_\text{state}^0)$, which leads to an average state growth of $2,628,000\cdot S^*$ bytes per year. Note that $2,628,000$ is the number of blocks per year (i.e., one every 12 seconds)
 - $B^* = B(b^* g_\text{burst}^0)$
 
 and the following shares per resource type:
@@ -236,7 +236,7 @@ Increasing $m$ (making state creation more expensive) impacts the block share de
 - Conversely, when both demands have high elasticity (top-right corner), the effect is reversed, with a decreasing portion of the block dedicated to state creation when compared with the $m=1$ scenario. The magnitude of the change depends again on $m$.
 - The cases with the highest share of state creation occur when demand for burst resources has low elasticity (bottom side of the plot). In this case, increasing the cost of state creation has no effect.
 
-In conclusion, increasing the gas costs of state creation may have a positive or negative effect on the share of the equilibrium block dedicated to state creation. This depends on the elasticity regime. Yet, when the share of block space dedicated to state creation is already high in the base scenario ($m=1$), then increasing the gas costs of state creation does not impact this share significantly. In other words, if we are in an elasticity regime that will already have a high share of state creation gas under increasing block limits, increases its gas prices won't have a significant effect.
+In conclusion, increasing the gas costs of state creation may have a positive or negative effect on the share of the equilibrium block dedicated to state creation. This depends on the elasticity regime. Yet, when the share of block space dedicated to state creation is already high in the base scenario ($m=1$), then increasing the gas costs of state creation does not impact this share significantly. In other words, if we are in an elasticity regime that will already have a high share of state creation gas under increasing block limits, increasing its gas prices won't have a significant effect.
 
 ### 3.3 Impact of repricing on the annual state growth
 
