@@ -87,6 +87,8 @@ Plus, attempting to mitigate state growth under higher block limits (EIP-8037)
 
 ---
 
+<!-- .slide: style="font-size: 34px;" -->
+
 ## A pragmatic way forward
 
 1. Align on the gas limit for Glamsterdam
@@ -107,9 +109,7 @@ Plus, attempting to mitigate state growth under higher block limits (EIP-8037)
 
 ---
 
-**Suggestion: 100M gas limit before ePBS**
-
-This means:
+### Suggestion: 100M gas limit before ePBS
 
 - Repricing all operations performing below 35M gas/second after BALs
   - 15 operations according to gas bench data from Dec. 15th
@@ -120,29 +120,32 @@ This means:
 
 ## What about state growth?
 
-1. Align a target state growth rate
+1. Align on a target state growth rate
    - This will inform how aggressive we need to be
    - Three angles to consider
 
 ---
 
-### Three angles to consider
 
-- State I/O performance.
-  - Likely the most critical.
-  - Stateful benchmarks will give us better numbers on the current status and on how performance degrades from mainnet to bloatnet.
+<!-- .slide: style="font-size: 32px;" -->
+
+## Three angles to consider
+
+- State I/O performance
+  - Likely the most critical
+  - Stateful benchmarks will give us better numbers on the current status and on how performance degrades from mainnet to bloatnet
   - BALs very likely to improve this significantly!
-- Sync/healing.
-  - This is not a concern now, but we don't yet know when it will become an issue.
-  - Carlos is bloating again to allow us to test this under bigger states.
-- Block building.
+- Sync/healing
+  - This is not a concern now, but we don't yet know when it will become an issue
+  - Carlos is bloating again to allow us to test this under bigger states
+- Block building
   - Likely not a priority for now, but we should start benchmarking this
 
 ---
 
 ## What about state growth?
 
-1. Align a target state growth rate
+1. Align on a target state growth rate
    - This will inform how aggressive we need to be
    - Three angles to consider
 2. Select the approach for EIP-8037
