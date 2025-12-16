@@ -90,11 +90,11 @@ Plus, attempting to mitigate state growth under higher block limits (EIP-8037)
 ## A pragmatic way forward
 
 1. Align on the gas limit for Glamsterdam
-2. Increase the price all operations performing worse than the gas target (after BALs and ePBS)
+2. Increase the price of all operations performing worse than the gas target (after BALs and ePBS)
    - These are the bottlenecks to reach the gas target, so they need to be repriced
 3. Decrease the price of some simple compute operations
    - This will increase the throughput for these operations
-   - We will not reprice every operation, only the ones that are simple to test and that frequently used
+   - We will not reprice every operation, only the ones that are simple to test and that are frequently used
 4. Figure out how to handle state growth
 
 ---
@@ -111,7 +111,7 @@ Plus, attempting to mitigate state growth under higher block limits (EIP-8037)
 
 This means:
 
-- Repricing all operations performing bellow 35M gas/second after BALs
+- Repricing all operations performing below 35M gas/second after BALs
   - 15 operations according to gas bench data from Dec. 15th
   - CALL*, some EXTCODE*, point eval, some simple arithmetic
 - Reaching ~300M-200M gas limit with ePBS
